@@ -16,3 +16,22 @@ export interface Order {
     takeProfit?: number;
     stopLoss?: number;
 }
+
+export interface UserBalance {
+    symbol: Symbol;
+    balance: number;
+    decimals: number;
+}
+
+export interface PriceData {
+    symbol: string;
+    bid: number;
+    ask: number;
+    timestamp: number;
+}
+
+export interface BalanceAsset {
+    symbol: string;
+    balance: number;
+    decimals: number;
+}
