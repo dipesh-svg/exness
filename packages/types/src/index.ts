@@ -35,3 +35,49 @@ export interface BalanceAsset {
     balance: number;
     decimals: number;
 }
+
+export type EngineMessageKind =
+    | "create-order"
+    | "close-order"
+    | "price-update"
+    | "balance-update";
+
+export interface CreateOrderPayload {
+    id: string;
+    userId: string;
+    asset: string;
+    side: Side;
+    qty: number;
+    leverage: number;
+    takeProfit?: number;
+    stopLoss?: number;
+    balanceSnapshot: BalanceAsset[];
+    enqueuedAt: number;
+}
+
+export interface CloseOrderPayload {
+    orderId: string;
+    userId: string;
+    closeReason: CloseReason;
+    pnl?: number;
+    closedAt: number;
+}
+
+export interface PriceUpdatePayload {
+    s: string;
+    b: number;
+    a: number;
+}
+
+export interface BalanceUpdatePayload {
+    userId: string;
+    symbol: Symbol;
+    newBalance: number;
+    decimals: number;
+}
+
+export type EngineMessage =
+    | { kind: "create-order"; payload: CreateOrderPayload }
+    | { kind: "close-order"; payload: CloseOrderPayload }
+    | { kind: "price-update"; payload: PriceUpdatePayload }
+    | { kind: "balance-update"; payload: BalanceUpdatePayload };
