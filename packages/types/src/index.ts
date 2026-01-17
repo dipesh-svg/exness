@@ -30,17 +30,17 @@ export interface PriceData {
     timestamp: number;
 }
 
-export interface BalanceAsset {
-    symbol: string;
-    balance: number;
-    decimals: number;
-}
-
 export type EngineMessageKind =
     | "create-order"
     | "close-order"
     | "price-update"
     | "balance-update";
+
+export interface BalanceAsset {
+    symbol: string;
+    balance: number;
+    decimals: number;
+}
 
 export interface CreateOrderPayload {
     id: string;
@@ -81,3 +81,22 @@ export type EngineMessage =
     | { kind: "close-order"; payload: CloseOrderPayload }
     | { kind: "price-update"; payload: PriceUpdatePayload }
     | { kind: "balance-update"; payload: BalanceUpdatePayload };
+
+export type CallbackStatus =
+    | "created"
+    | "closed"
+    | "insufficient_balance"
+    | "no_price"
+    | "invalid_order";
+
+export interface CallbackMessage {
+    id: string;
+    status: CallbackStatus;
+    reason?: CloseReason;
+    pnl?: number;
+}
+
+export const STREAMS = {
+    ENGINE: "engine-stream",
+    CALLBACK: "callback-queue",
+} as const;
