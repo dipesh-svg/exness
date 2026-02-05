@@ -15,7 +15,7 @@ redis.on("connect", () => {
 
 redis.on("error", (err) => {
     console.log("Error in price poller service: ", err);
-});
+})
 
 ws.on("open", () => {
     const subscribeMessage = {
@@ -24,4 +24,18 @@ ws.on("open", () => {
         id: 1,
     };
     ws.send(JSON.stringify(subscribeMessage));
+});
+
+ws.on("message", async (message) => {
+    try {
+        const data = JSON.parse(message.toString());
+        await redis.xadd(
+            "engine-stream",
+            "*",
+            "data",
+            JSON.stringify({ kind: "price-update", payload: data })
+        );
+    } catch (e) {
+        console.log(e);
+    }
 });
