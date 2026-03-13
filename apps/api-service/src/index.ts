@@ -1,15 +1,45 @@
-import express from "express";
-import cors from "cors";
-import routes from "./routes";
-import { RUNTIME_CONFIG } from "./libs/runtime-config";
+import express from "express"
+import { configDotenv } from "dotenv"
+import cors from "cors"
+import cookieParser from "cookie-parser";
+import { router } from "./routes";
+import { redis } from "@repo/redis";
+
+configDotenv();
+
+redis.connect().catch((err) => {
+    console.error("[redis] failed to connect:", err.message);
+    process.exit(1);
+});
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
-app.use("/api/v1", routes);
+const PORT = process.env.PORT || 4000;
 
-const PORT = RUNTIME_CONFIG.PORT || 3001;
+app.use(
+    cors({
+        origin: "http://localhost:3000",
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: [
+            "Content-Type",
+            "Authorization",
+            "Cookie",
+            "X-Requested-With",
+        ],
+    })
+);
+
+app.use(express.json());
+app.use(cookieParser());
+
+app.use("/api", router);
+
+app.get("/health", (req, res) => {
+    res.json({ status: "OK", timestamp: new Date().toISOString() });
+});
+
 app.listen(PORT, () => {
-    console.log(`API Service listening on port ${PORT}`);
+    console.log(`API Service running on port ${PORT}`);
+    console.log(`Health check available at http://localhost:${PORT}/health`);
 });
